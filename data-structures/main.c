@@ -11,9 +11,11 @@ int main() {
     vector_push_back(&v, 14);
     vector_push_back(&v, 37);
     vector_push_back(&v, 14);
+    vector_push_back(&v, 18);
+    vector_push_back(&v, 21);
 
     vector_print(&v);
-    vector_bubble_sort(&v);
+    vector_merge_sort(&v, 0, 6);
     vector_print(&v);
     // Free the vector memory
     vector_free(&v);

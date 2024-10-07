@@ -57,10 +57,40 @@ int vector_get(Vector *v, int index){
 
 void vector_swap(Vector *v, int index1, int index2){
     if (index1 >= 0 && index1 < v->size && index2 >= 0 && index2 < v->size){
+        if (v->data[index1] == v->data[index2]) return;
+        
         int temp = v->data[index1];
         v->data[index1] = v->data[index2];
         v->data[index2] = temp;
     }
+}
+
+int vector_min(Vector *v, int from, int to){
+    int min, mi, i;
+    min = v->data[from];
+
+    for(i = from + 1; i < to; ++i){
+        if(v->data[i] < min){
+            min = v->data[i];
+            mi = i;
+        }
+    }
+
+    return mi;
+}
+
+int vector_max(Vector *v, int from, int to){
+    int max, mi, i;
+    max = v->data[from];
+
+    for(i = from + 1; i > to; ++i){
+        if(v->data[i] > max){
+            max = v->data[i];
+            mi = i;
+        }
+    }
+
+    return mi;
 }
 
 void vector_print(Vector *v){
@@ -72,16 +102,81 @@ void vector_print(Vector *v){
     printf(" ]\n");
 }
 
+// Comparison-based Sorting Algorithms:
+// BUB
 void vector_bubble_sort(Vector* v){
-    int i;
-    bool swapped;
-    do {
-        swapped = false;
-        for (i = 1; i < v->size; ++i){
-            if (v->data[i - 1] > v->data[i]){
-                vector_swap(v, i - 1, i);
-                swapped = true;
-            }
+    int n, i;
+    for(n = v->size; n > 0; --n){
+        for(i = 0; i < n-1; ++i){
+            if(v->data[i] > v->data[i+1])
+                vector_swap(v, i, i+1);
         }
-    } while (swapped);
+    }
+}
+
+// SEL
+void vector_selection_sort(Vector* v){
+    int i, mi;
+    for(i = 0; i < v->size - 1; ++i){
+        mi = vector_min(v, i, v->size);
+        vector_swap(v, i, mi);
+    }
+}
+
+// INS
+void vector_insertion_sort(Vector* v) {
+    int i, j, x;
+    for (i = 1; i < v->size; ++i) {
+        x = v->data[i];
+        j = i - 1;
+
+        while (j >= 0 && v->data[j] > x) {
+            v->data[j + 1] = v->data[j];
+            j--;
+        }
+        v->data[j + 1] = x;
+    }
+}
+
+// MER
+void vector_merge(Vector* v, int low, int mid, int high) {
+    int n, k, left, right, subarrIdx;
+    n = high - low + 1;   // Total number of elements to merge
+    left = low;           // Pointer to the left subarray (low to mid)
+    right = mid + 1;      // Pointer to the right subarray (mid+1 to high)
+    subarrIdx = 0;        // Index for the temporary merged array
+
+    int subarr[n];        // Temporary array to store the merged result
+
+    // Merge the two subarrays
+    while (left <= mid && right <= high) 
+        subarr[subarrIdx++] = v->data[left] <= v->data[right] ? v->data[left++] : v->data[right++];
+
+    // Copy any remaining elements from the left subarray
+    while (left <= mid) 
+        subarr[subarrIdx++] = v->data[left++];
+
+    // Copy any remaining elements from the right subarray
+    while (right <= high) 
+        subarr[subarrIdx++] = v->data[right++];
+
+    // Copy the merged elements back into the original array
+    for (k = 0; k < n; ++k) 
+        v->data[low + k] = subarr[k];
+}
+
+
+void vector_merge_sort(Vector* v, int low, int high) {
+    if (low < high) {
+        int mid = (low + high) / 2;
+
+        // Recursively sort the first half
+        vector_merge_sort(v, low, mid);
+
+        // Recursively sort the second half
+        vector_merge_sort(v, mid + 1, high);
+
+        // Merge the two halves
+        vector_merge(v, low, mid, high);
+    }
 }
